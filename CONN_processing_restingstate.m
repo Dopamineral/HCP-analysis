@@ -6,7 +6,7 @@ BIDS_DIR = 'E:\Neuroradiology\data\BIDS\';
 DATA_DIR = 'E:\Neuroradiology\data\';
 
 %% Fill in these variables
-TR = 0.72
+TR = 0.72;
 
 % Below is adapted version of Andysbrainbook conn processing script.
 %% FIND functional/structural files
@@ -39,7 +39,7 @@ TR = repmat(TR, 1,NSUBJECTS); %Creates Array of RTs according to how many subjec
 clear batch;
 batch.filename=fullfile(DATA_DIR,'resting_state.mat');            % New conn_*.mat experiment name
 
-batch.parallel.N = 3;
+batch.parallel.N = 2;
 parallel.immediatereturn = 1;
 
 % SETUP & PREPROCESSING step (using default values for most parameters, see help conn_batch to define non-default values)

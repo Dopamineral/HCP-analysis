@@ -8,11 +8,12 @@ BIDS_DIR = "E:\Neuroradiology\data\BIDS\";
 HCP_DIR = "E:\Neuroradiology\data\HCP\";
 
 %% Select which folders to convert
-%Select ZIP files in datafolder that you want to unzip into the MNI folder
+%Select ZIP files in datafolder that you want to unzip into the HCP folder
 cd(DATA_DIR)
 [files,path] = uigetfile('.zip','MultiSelect','on');
 
-%Unzip file into MNI folder structure (and delete the original zip file.)
+tic
+%Unzip file into HCP folder structure (and delete the original zip file.)
 for i = 1:size(files,2)
     
     disp("Unzipping: " + files{i})
@@ -30,11 +31,19 @@ cd(HCP_DIR)
 subject_dirs = dir();
 sub_dirs = subject_dirs(3:end);
 
-%Manually selecting the relevant files below here that you need
-%anatomical
+
 tic
 patient_data = table();
-for i = 1:length(sub_dirs)
+
+% %Check which sub folders already exist in BIDS DIR so new files get added instead of
+% %overwritten. Commented out for now because below loop just creates sub
+% folders out of the HCP folder structure.
+
+cd(BIDS_DIR)
+% bids_sub_dirs = dir('sub-*');
+% N_present = size(bids_sub_dirs,1);
+
+for i = 1:(length(sub_dirs))
     %saving info into table
     patient_data.id = sub_dirs(i).name;
     %Creating BIDS structure in BIDS_DIR

@@ -41,7 +41,7 @@ TR = repmat(TR, 1,NSUBJECTS); %Creates Array of RTs according to how many subjec
 
 batch.filename=fullfile(DATA_DIR,'tb_langauge.mat');            % New conn_*.mat experiment name
 
-batch.parallel.N = 3;
+batch.parallel.N = 2;
 parallel.immediatereturn = 1;
 
 % SETUP & PREPROCESSING step (using default values for most parameters, see help conn_batch to define non-default values)

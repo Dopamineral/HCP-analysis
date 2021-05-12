@@ -83,7 +83,7 @@ for i = 1:size(subfolders,1)
 
     %% Define Contrasts
     matlabbatch{3}.spm.stats.con.consess{1}.tcon.name = 'Math-Story-01'; % Contrast name
-    matlabbatch{3}.spm.stats.con.consess{1}.tcon.weights = [0 1]; % Set contrast
+    matlabbatch{3}.spm.stats.con.consess{1}.tcon.weights = [-1 1]; % Set contrast
     matlabbatch{3}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
     matlabbatch{3}.spm.stats.con.delete = 0;
 
@@ -91,16 +91,17 @@ for i = 1:size(subfolders,1)
 %     matlabbatch{4}.spm.stats.results.spmmat(1) = cfg_dep('Contrast Manager: SPM.mat File', substruct('.','val', '{}',{3}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
 %     matlabbatch{4}.spm.stats.results.conspec.titlestr = '';
 %     matlabbatch{4}.spm.stats.results.conspec.contrasts = Inf;
-%     matlabbatch{4}.spm.stats.results.conspec.threshdesc = 'FWE';
+%     matlabbatch{4}.spm.stats.results.conspec.threshdesc = 'FDR';
 %     matlabbatch{4}.spm.stats.results.conspec.thresh = 0.05;
 %     matlabbatch{4}.spm.stats.results.conspec.extent = 10;
 %     matlabbatch{4}.spm.stats.results.conspec.conjunction = 1;
 %     matlabbatch{4}.spm.stats.results.conspec.mask.none = 1;
 %     matlabbatch{4}.spm.stats.results.units = 1;
 %     matlabbatch{4}.spm.stats.results.export{1}.ps = true;
+%% Run job
+
     spm_jobman('run',matlabbatch)
-      
-%       clear matlabbatch
+    clear matlabbatch
 end
 
 
