@@ -69,7 +69,8 @@ L_V_rs_pstg_l = V_rs_pstg_l(L_hemi_bounds_x,:,:);
 
 %% Comparative Metrics
     % BILATERAL
-
+data_bilateral.subject(i) = i;
+data_bilateral.hemisphere(i) = "Bilateral";
 %IFG R
 [data_bilateral.jac_ifgr(i), data_bilateral.dice_ifgr(i), data_bilateral.relvol_ifgr(i) ] = metrics(V_tb,V_rs_ifg_r);
 %IFG L
@@ -78,10 +79,13 @@ L_V_rs_pstg_l = V_rs_pstg_l(L_hemi_bounds_x,:,:);
 [data_bilateral.jac_pstgr(i), data_bilateral.dice_pstgr(i), data_bilateral.relvol_pstgr(i) ] = metrics(V_tb,V_rs_pstg_r);
 %PSTG L
 [data_bilateral.jac_pstgl(i), data_bilateral.dice_pstgl(i), data_bilateral.relvol_pstgl(i) ] = metrics(V_tb,V_rs_pstg_l);
-    
+
+
+
 
 % RIGHT HEMI
-
+data_righthemi.subject(i) = i;
+data_righthemi.hemisphere(i) = "Right";
 %IFG R
 [data_righthemi.jac_ifgr(i), data_righthemi.dice_ifgr(i), data_righthemi.relvol_ifgr(i) ] = metrics(R_V_tb,R_V_rs_ifg_r);
 %IFG L
@@ -90,7 +94,10 @@ L_V_rs_pstg_l = V_rs_pstg_l(L_hemi_bounds_x,:,:);
 [data_righthemi.jac_pstgr(i), data_righthemi.dice_pstgr(i), data_righthemi.relvol_pstgr(i) ] = metrics(R_V_tb,R_V_rs_pstg_r);
 %PSTG L
 [data_righthemi.jac_pstgl(i), data_righthemi.dice_pstgl(i), data_righthemi.relvol_pstgl(i) ] = metrics(R_V_tb,R_V_rs_pstg_l);
-    
+
+
+data_lefthemi.subject(i) = i;
+data_lefthemi.hemisphere(i) = "Left";
 
 % LEFT HEMI
 %IFG R
@@ -102,8 +109,24 @@ L_V_rs_pstg_l = V_rs_pstg_l(L_hemi_bounds_x,:,:);
 %PSTG L
 [data_lefthemi.jac_pstgl(i), data_lefthemi.dice_pstgl(i), data_lefthemi.relvol_pstgl(i) ] = metrics(L_V_tb,L_V_rs_pstg_l);
 
+
 end
 
-writetable(data_bilateral,'data_bilateral.csv')
-writetable(data_lefthemi,'data_lefthemi.csv')
-writetable(data_righthemi,'data_righthemi.csv')
+masterdata = [data_lefthemi; data_bilateral; data_righthemi];
+
+%% Plot data
+figure;
+subplot(3,3,1)
+boxplot([masterdata.jac_ifgl],categorical(masterdata.hemisphere))
+title({'Language network IFG Left','Jaccard '})
+ylim([0,0.5])
+
+subplot(3,3,2)
+boxplot([masterdata.dice_ifgl],categorical(masterdata.hemisphere))
+title({'Language network IFG Left','Dice '})
+ylim([0,0.5])
+
+subplot(3,3,3)
+boxplot([masterdata.relvol_ifgl],categorical(masterdata.hemisphere))
+title({'Language network IFG Left','Dice '})
+
