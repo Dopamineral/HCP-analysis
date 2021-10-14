@@ -79,7 +79,7 @@ batch.Setup.overwrite='Yes';
 
 %% DENOISING step
 % CONN Denoising                                    % Default options (uses White Matter+CSF+realignment+scrubbing+conditions as confound regressors); see conn_batch for additional options 
-batch.Denoising.filter=[0.008, Inf];                 % frequency filter (band-pass values, in Hz)
+batch.Denoising.filter=[0.008, 0.09];                 % frequency filter (band-pass values, in Hz)
 batch.Denoising.done=1;
 batch.Denoising.overwrite='Yes';
 
