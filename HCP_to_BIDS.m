@@ -6,6 +6,15 @@ addpath("E:\Neuroradiology\scripts")
 DATA_DIR = "E:\Neuroradiology\data\";
 BIDS_DIR = "E:\Neuroradiology\data\BIDS\";
 HCP_DIR = "E:\Neuroradiology\data\HCP\";
+TEMP_DIR = 'E:\Neuroradiology\temp\';
+%% Set temp directory to be on the SSD so the computer doesn't freeze up.
+% tempdir % this returns the default temp dir I think.
+% clear all
+% setenv('TEMP','E:\Neuroradiology\temp\') % TEMP for Windows
+% getenv('TEMP') %check what is the tempp directory
+
+% This might have slowed down the process down the line, leave commented
+% for now
 
 %% Select which folders to convert
 %Select ZIP files in datafolder that you want to unzip into the HCP folder

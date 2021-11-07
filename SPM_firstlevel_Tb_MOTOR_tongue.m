@@ -14,7 +14,7 @@ for i = 1:size(subfolders,1)
         % Make first level analysis folder structure before continuing
         sub_name = subfolders(i).name;
         SUB_DIR = strcat(BIDS_DIR,sub_name,'\');
-        firstlevel_DIR= strcat(SUB_DIR,'1stLevel'); %language specific
+        firstlevel_DIR= strcat(SUB_DIR,'1stLevel_MOTOR_tongue'); %motor specific
         mkdir(firstlevel_DIR);
 
     %% SPM part, inital variables
@@ -27,11 +27,11 @@ for i = 1:size(subfolders,1)
     %% Defining the scans to process
 
     % Defining the cell string that has to be fed into the spm.stats.fmri_spec.sess.scans part of matlabbatch
-    N_volumes = 316; %language specific
+    N_volumes = 284; % motor specific
     cell_of_scans = {};
 
     for N = 1:N_volumes
-        file_string = strcat(SUB_DIR, 'func\swau',sub_name,'_tfMRI_LANGUAGE_LR.nii,',num2str(N));
+        file_string = strcat(SUB_DIR, 'func\swau',sub_name,'_tfMRI_MOTOR_LR.nii,',num2str(N));
         scan = {file_string};
         cell_of_scans = [cell_of_scans;scan];
     end
@@ -39,31 +39,47 @@ for i = 1:size(subfolders,1)
     matlabbatch{1}.spm.stats.fmri_spec.sess.scans = cell_of_scans;
 
     %% Defining Conditions
-    %Condition1- MATH
-    matlabbatch{1}.spm.stats.fmri_spec.sess.cond(1).name = 'Math';
-    %Onsets, extract from EV folder
-
-    EV_folder = strcat(SUB_DIR,'func\', sub_name,'_LANGUAGE_EVs'); %navigate to folder that has EVs
+    %load EV files into datastructures
+    EV_folder = strcat(SUB_DIR,'func\', sub_name,'_MOTOR_EVs'); %navigate to folder that has EVs
     cd(EV_folder)
+    
+    cue = readtable('cue.txt');
+    lf = readtable('lf.txt');
+    lh = readtable('lh.txt');
+    rf = readtable('rf.txt');
+    rh = readtable('rh.txt');
+    t = readtable('t.txt');
 
-    math = readtable('math.txt');                               %LOAD MATH EV FILE
+    %combine motor tasks into one
+    motor = [lf;lh;rf;rh;t];
+    motor_L = [lf;lh];
+    motor_R = [rf;rh];
+    limbs = [lf;lh;rf;rh];
+    tongue = t;
+    hands = [lh;rh];
+    feetongue = [lf;rf;t];
 
-    matlabbatch{1}.spm.stats.fmri_spec.sess.cond(1).onset = math.Var1; %onsets
-    matlabbatch{1}.spm.stats.fmri_spec.sess.cond(1).duration = math.Var2; %durations
+
+    %Condition1- MOTOR
+    matlabbatch{1}.spm.stats.fmri_spec.sess.cond(1).name = 'Cue';
+
+    matlabbatch{1}.spm.stats.fmri_spec.sess.cond(1).onset = cue.Var1; %onsets
+    matlabbatch{1}.spm.stats.fmri_spec.sess.cond(1).duration = cue.Var2; %durations
 
     matlabbatch{1}.spm.stats.fmri_spec.sess.cond(1).tmod = 0;
     matlabbatch{1}.spm.stats.fmri_spec.sess.cond(1).pmod = struct('name', {}, 'param', {}, 'poly', {});
     matlabbatch{1}.spm.stats.fmri_spec.sess.cond(1).orth = 1;
-    %Condition2- Story
-    matlabbatch{1}.spm.stats.fmri_spec.sess.cond(2).name = 'Story';
-
-    story = readtable('story.txt');                           %LOAD STORY EV FILE
-    matlabbatch{1}.spm.stats.fmri_spec.sess.cond(2).onset = story.Var1; %onsets
-    matlabbatch{1}.spm.stats.fmri_spec.sess.cond(2).duration = story.Var2; %durations
+    
+    %Condition2- CUE
+    matlabbatch{1}.spm.stats.fmri_spec.sess.cond(2).name = 'motor_tongue';
+                   
+    matlabbatch{1}.spm.stats.fmri_spec.sess.cond(2).onset = tongue.Var1; %onsets
+    matlabbatch{1}.spm.stats.fmri_spec.sess.cond(2).duration = tongue.Var2; %durations
 
     matlabbatch{1}.spm.stats.fmri_spec.sess.cond(2).tmod = 0;
     matlabbatch{1}.spm.stats.fmri_spec.sess.cond(2).pmod = struct('name', {}, 'param', {}, 'poly', {});
     matlabbatch{1}.spm.stats.fmri_spec.sess.cond(2).orth = 1;
+
 
     %% Define model and estimate model
     matlabbatch{1}.spm.stats.fmri_spec.sess.multi = {''};
@@ -83,8 +99,8 @@ for i = 1:size(subfolders,1)
     matlabbatch{3}.spm.stats.con.spmmat(1) = cfg_dep('Model estimation: SPM.mat File', substruct('.','val', '{}',{2}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
 
     %% Define Contrasts
-    matlabbatch{3}.spm.stats.con.consess{1}.tcon.name = 'Math-Story-01'; % Contrast name
-    matlabbatch{3}.spm.stats.con.consess{1}.tcon.weights = [-1 1]; % Set contrast
+    matlabbatch{3}.spm.stats.con.consess{1}.tcon.name = 'Cue-MotorTongue-01'; % Contrast name
+    matlabbatch{3}.spm.stats.con.consess{1}.tcon.weights = [0 1]; % Set contrast
     matlabbatch{3}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
     matlabbatch{3}.spm.stats.con.delete = 0;
 
