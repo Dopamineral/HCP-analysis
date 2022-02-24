@@ -2,8 +2,10 @@
 addpath("E:\Neuroradiology\conn20b\conn"); %CONN
 addpath("E:\Neuroradiology\spm12\spm12"); % SPM
 
-BIDS_DIR = 'E:\Neuroradiology\data\BIDS\';
-DATA_DIR = 'E:\Neuroradiology\data\';
+DATA_DIR = "/mnt/storage/neuroradiology/data/";
+BIDS_DIR = "/mnt/storage/neuroradiology/data/BIDS/";
+HCP_DIR = "/mnt/storage/neuroradiology/data/HCP/";
+ZIP_DIR = "/mnt/storage/neuroradiology/data/ZIP/";
 
 %% Fill in these variables
 TR = 0.72;
@@ -28,8 +30,8 @@ disp([num2str(size(FUNCTIONAL_FILE,2)),' subjects']);
 
 %Correct the asterix string error from above 
 for i = 1:length(FUNCTIONAL_FILE)
-    FUNCTIONAL_FILE{i} = strcat(FUNCTIONAL_FILE{i}(1:4), num2str(i,'%02.f'), FUNCTIONAL_FILE{i}(6:end));
-    STRUCTURAL_FILE{i} = strcat(STRUCTURAL_FILE{i}(1:4), num2str(i,'%02.f'), STRUCTURAL_FILE{i}(6:end));
+    FUNCTIONAL_FILE{i} = strcat(FUNCTIONAL_FILE{i}(1:4), num2str(i,'%03.f'), FUNCTIONAL_FILE{i}(6:end));
+    STRUCTURAL_FILE{i} = strcat(STRUCTURAL_FILE{i}(1:4), num2str(i,'%03.f'), STRUCTURAL_FILE{i}(6:end));
 end
 
 TR = repmat(TR, 1,NSUBJECTS); %Creates Array of RTs according to how many subjects there are. 

@@ -3,8 +3,10 @@ addpath("E:\Neuroradiology\conn20b\conn"); %CONN
 addpath("E:\Neuroradiology\spm12\spm12"); % SPM
 addpath("E:\Neuroradiology\spm12\spm12\matlabbatch") %adding matlabbatch path because cfg_dep was not found before
 
-BIDS_DIR = 'E:\Neuroradiology\data\BIDS\';
-DATA_DIR = 'E:\Neuroradiology\data\';
+DATA_DIR = "/mnt/storage/neuroradiology/data/";
+BIDS_DIR = "/mnt/storage/neuroradiology/data/BIDS/";
+HCP_DIR = "/mnt/storage/neuroradiology/data/HCP/";
+ZIP_DIR = "/mnt/storage/neuroradiology/data/ZIP/";
 
 %% Make the necessary folder structure
 cd(BIDS_DIR)
