@@ -1,7 +1,7 @@
 %% Add necessary folders and paths
-addpath("E:\Neuroradiology\conn20b\conn"); %CONN
-addpath("E:\Neuroradiology\spm12\spm12"); % SPM
-addpath("E:\Neuroradiology\spm12\spm12\matlabbatch") %adding matlabbatch path because cfg_dep was not found before
+addpath("/usr/local/KUL_apps/con20b"); %CONN
+addpath("/usr/local/KUL_apps/spm12"); % SPM
+addpath("/usr/local/KUL_apps/spm12/matlabbatch") %adding matlabbatch path because cfg_dep was not found before
 
 DATA_DIR = "/mnt/storage/neuroradiology/data/";
 BIDS_DIR = "/mnt/storage/neuroradiology/data/BIDS/";
@@ -12,16 +12,16 @@ ZIP_DIR = "/mnt/storage/neuroradiology/data/ZIP/";
 cd(BIDS_DIR)
 subfolders = dir('sub*');
 tic
-for i = 1:size(subfolders,1)
+for i = 96:size(subfolders,1)
         % Make first level analysis folder structure before continuing
         sub_name = subfolders(i).name;
-        SUB_DIR = strcat(BIDS_DIR,sub_name,'\');
+        SUB_DIR = strcat(BIDS_DIR,sub_name,'/');
         firstlevel_DIR= strcat(SUB_DIR,'1stLevel_MOTOR_tongue'); %motor specific
         mkdir(firstlevel_DIR);
 
     %% SPM part, inital variables
 
-    matlabbatch{1}.spm.stats.fmri_spec.dir = {firstlevel_DIR};
+    matlabbatch{1}.spm.stats.fmri_spec.dir = cellstr(firstlevel_DIR);
     matlabbatch{1}.spm.stats.fmri_spec.timing.units = 'secs';
     matlabbatch{1}.spm.stats.fmri_spec.timing.RT = 0.72;
     matlabbatch{1}.spm.stats.fmri_spec.timing.fmri_t = 16;
@@ -33,16 +33,18 @@ for i = 1:size(subfolders,1)
     cell_of_scans = {};
 
     for N = 1:N_volumes
-        file_string = strcat(SUB_DIR, 'func\swau',sub_name,'_tfMRI_MOTOR_LR.nii,',num2str(N));
+        file_string = strcat(SUB_DIR, 'func/dswu',sub_name,'_tfMRI_MOTOR_LR.nii,',num2str(N));
         scan = {file_string};
         cell_of_scans = [cell_of_scans;scan];
     end
 
-    matlabbatch{1}.spm.stats.fmri_spec.sess.scans = cell_of_scans;
+    scan_cellstring = cellstr(cell_of_scans);
+
+    matlabbatch{1}.spm.stats.fmri_spec.sess.scans = scan_cellstring;
 
     %% Defining Conditions
     %load EV files into datastructures
-    EV_folder = strcat(SUB_DIR,'func\', sub_name,'_MOTOR_EVs'); %navigate to folder that has EVs
+    EV_folder = strcat(SUB_DIR,'func/', sub_name,'_MOTOR_EVs'); %navigate to folder that has EVs
     cd(EV_folder)
     
     cue = readtable('cue.txt');

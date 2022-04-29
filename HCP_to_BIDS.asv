@@ -56,7 +56,7 @@ for i = 1:size(files,2)
     time_now = toc;
 end
 
-%% Select the Files to continue using for the analysis
+%% Create BIDS folder structure from the HCP folders
 
 cd(HCP_DIR)
 subject_dirs = dir();
@@ -74,7 +74,7 @@ end
 writetable(sub_table,DATA_DIR+"sub_table")
 
 
-for i = 1:(length(sub_dirs))
+for i = 1:(size(sub_table,1))
 
     %Creating BIDS structure in BIDS_DIR
     cd(BIDS_DIR)
@@ -102,57 +102,78 @@ for i = 1:(length(sub_dirs))
 
     disp("Creating BIDS for: " + sub_foldername)
     
-    %Create BIDS folder structure
+    %Create BIDS like folder structure
     mkdir(sub_foldername)
     cd(sub_foldername)
     mkdir("anat") %anatomical folder
-    bids_anat_dir = BIDS_DIR + sub_foldername + "\" + "anat\";
+    bids_anat_dir = BIDS_DIR + sub_foldername + "/" + "anat/";
     mkdir("func") %functional folder
-    bids_func_dir = BIDS_DIR + sub_foldername + "\" + "func\";
+    bids_func_dir = BIDS_DIR + sub_foldername + "/" + "func/";
     
     
-    %% Selecting relevant files from HCP folders and copying it into BIDS format
+    % Selecting relevant files from HCP folders and copying it into BIDS format
+    tic
+    disp('extracting anatomical files for ' + sub_foldername)
     %anatomical
-    anatomical_folder = HCP_DIR + sub_dirs(i).name +"\MNINonLinear\";
+    anatomical_folder = HCP_DIR + sub_dirs(i).name +"/MNINonLinear/";
     anatomical_file = "T1w_restore_brain.nii.gz";
     file = anatomical_folder+anatomical_file;
     new_file = bids_anat_dir + sub_foldername + "_" + anatomical_file;
     copyfile(file, new_file)
     gunzip(new_file)
-    delete(new_file)
+    delete(new_file) %deletes the zip file in the BIDS dir, doesn't touch HCP don't worry
+    test = niftiread(file);
+
+    disp('extracting tb func files for ' + sub_foldername)
 
     %tb_motor
-    tb_motor_folder = HCP_DIR + sub_dirs(i).name +"\MNINonLinear\Results\tfMRI_MOTOR_LR\";
+    tb_motor_folder = HCP_DIR + sub_dirs(i).name +"/MNINonLinear/Results/tfMRI_MOTOR_LR/";
     tb_motor_file = "tfMRI_MOTOR_LR.nii.gz";
-    ev_folder_motor = HCP_DIR + sub_dirs(i).name +"\MNINonLinear\Results\tfMRI_MOTOR_LR\EVs\";
+    ev_folder_motor = HCP_DIR + sub_dirs(i).name +"/MNINonLinear/Results/tfMRI_MOTOR_LR/EVs/";
     file = tb_motor_folder+tb_motor_file;
     new_file = bids_func_dir + sub_foldername + "_" + tb_motor_file;
     copyfile(file, new_file)
-    copyfile(ev_folder_motor, (bids_func_dir + sub_foldername + "_MOTOR_EVs\"))
-    gunzip(new_file)
+    copyfile(ev_folder_motor, (bids_func_dir + sub_foldername + "_MOTOR_EVs/"))
+    nii_file = gunzip(new_file);
     delete(new_file)
-    
+    try
+        test = niftiread(nii_file{1});
+    catch
+        disp('error reading ' + nii_file{1} + ' logging and continuing')
+        unzip_log_file = fopen(DATA_DIR+"unzip_error_log.txt",'a');
+        fprintf(unzip_log_file,'Error loading: %s \n',nii_file{1});
+        fclose(unzip_log_file);
+    end
+
+
     %tb_language
-    tb_language_folder = HCP_DIR + sub_dirs(i).name +"\MNINonLinear\Results\tfMRI_LANGUAGE_LR\";
+    tb_language_folder = HCP_DIR + sub_dirs(i).name +"/MNINonLinear/Results/tfMRI_LANGUAGE_LR/";
     tb_language_file = "tfMRI_LANGUAGE_LR.nii.gz";
-    ev_folder_language = HCP_DIR + sub_dirs(i).name +"\MNINonLinear\Results\tfMRI_LANGUAGE_LR\EVs";
+    ev_folder_language = HCP_DIR + sub_dirs(i).name +"/MNINonLinear/Results/tfMRI_LANGUAGE_LR/EVs";
     file = tb_language_folder+tb_language_file;
     new_file = bids_func_dir + sub_foldername + "_" + tb_language_file;
     copyfile(file, new_file);
-    copyfile(ev_folder_language, (bids_func_dir + sub_foldername + "_LANGUAGE_EVs\"));
+    copyfile(ev_folder_language, (bids_func_dir + sub_foldername + "_LANGUAGE_EVs/"));
     gunzip(new_file)
     delete(new_file)
+    test = nifiread(file);
     
+    disp('extracting rs func files for ' + sub_foldername)
+
     %resting_state
-    rest_folder = HCP_DIR + sub_dirs(i).name +"\MNINonLinear\Results\rfMRI_REST1_LR\";
+    rest_folder = HCP_DIR + sub_dirs(i).name +"/MNINonLinear/Results/rfMRI_REST1_LR/";
     rest_file = "rfMRI_REST1_LR.nii.gz";
     file = rest_folder+rest_file;
     new_file = bids_func_dir + sub_foldername + "_" + rest_file;
     copyfile(file, new_file)
     gunzip(new_file)
     delete(new_file)
+    test = nifiread(file);
+    
+    disp("processing time: " + toc + " s")
     
 end
+
 
 
 

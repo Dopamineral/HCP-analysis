@@ -1,6 +1,6 @@
 %% Add necessary folders and paths
-addpath("E:\Neuroradiology\conn20b\conn"); %CONN
-addpath("E:\Neuroradiology\spm12\spm12"); % SPM
+addpath("/usr/local/KUL_apps/con20b"); %CONN
+addpath("/usr/local/KUL_apps/spm12"); % SPM
 
 DATA_DIR = "/mnt/storage/neuroradiology/data/";
 BIDS_DIR = "/mnt/storage/neuroradiology/data/BIDS/";
@@ -16,10 +16,10 @@ TR = 0.72;
 
 cd(BIDS_DIR)
 
-NSUBJECTS= length(dir(pwd)) - 3;% amount of sub-** files in  BIDS_DIR 
+NSUBJECTS= length(dir(pwd)) - 2;% amount of sub-** files in  BIDS_DIR 
 cwd=pwd;
-FUNCTIONAL_FILE=cellstr(conn_dir('sub-*\func\sub-*_rfMRI_REST1_LR.nii')); %the first asterix doesn't work here for some reason.
-STRUCTURAL_FILE=cellstr(conn_dir('sub-*\anat\sub-*_T1w_restore_brain.nii'));
+FUNCTIONAL_FILE=cellstr(conn_dir('sub-*/func/sub-*_rfMRI_REST1_LR.nii')); %the first asterix doesn't work here for some reason.
+STRUCTURAL_FILE=cellstr(conn_dir('sub-*/anat/sub-*_T1w_restore_brain.nii'));
 if rem(length(FUNCTIONAL_FILE),NSUBJECTS),error('mismatch number of functional files %n', length(FUNCTIONAL_FILE));end
 if rem(length(STRUCTURAL_FILE),NSUBJECTS),error('mismatch number of anatomical files %n', length(FUNCTIONAL_FILE));end
 nsessions=length(FUNCTIONAL_FILE)/NSUBJECTS;
@@ -30,8 +30,8 @@ disp([num2str(size(FUNCTIONAL_FILE,2)),' subjects']);
 
 %Correct the asterix string error from above 
 for i = 1:length(FUNCTIONAL_FILE)
-    FUNCTIONAL_FILE{i} = strcat(FUNCTIONAL_FILE{i}(1:4), num2str(i,'%03.f'), FUNCTIONAL_FILE{i}(6:end));
-    STRUCTURAL_FILE{i} = strcat(STRUCTURAL_FILE{i}(1:4), num2str(i,'%03.f'), STRUCTURAL_FILE{i}(6:end));
+    FUNCTIONAL_FILE{i} = strcat(FUNCTIONAL_FILE{i}(1:4), num2str(i,"%03.f"), FUNCTIONAL_FILE{i}(6:end));
+    STRUCTURAL_FILE{i} = strcat(STRUCTURAL_FILE{i}(1:4), num2str(i,"%03.f"), STRUCTURAL_FILE{i}(6:end));
 end
 
 TR = repmat(TR, 1,NSUBJECTS); %Creates Array of RTs according to how many subjects there are. 
@@ -75,9 +75,9 @@ batch.Setup.overwrite='Yes';
 %batch.Setup.rois.multiplelabels = 1;
 
 % uncomment the following 3 lines if you prefer to run one step at a time:
-% conn_batch(batch); % runs Preprocessing and Setup steps only
-% clear batch;
-% batch.filename=fullfile(cwd,'Arithmetic_Scripted.mat');            % Existing conn_*.mat experiment name
+conn_batch(batch); % runs Preprocessing and Setup steps only
+clear batch;
+batch.filename=fullfile(cwd,'Arithmetic_Scripted.mat');            % Existing conn_*.mat experiment name
 
 %% DENOISING step
 % CONN Denoising                                    % Default options (uses White Matter+CSF+realignment+scrubbing+conditions as confound regressors); see conn_batch for additional options 

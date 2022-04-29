@@ -56,7 +56,7 @@ for i = 1:size(files,2)
     time_now = toc;
 end
 
-%% Select the Files to continue using for the analysis
+%% Create BIDS folder structure from the HCP folders
 
 cd(HCP_DIR)
 subject_dirs = dir();
@@ -111,7 +111,7 @@ for i = 1:(size(sub_table,1))
     bids_func_dir = BIDS_DIR + sub_foldername + "/" + "func/";
     
     
-    %% Selecting relevant files from HCP folders and copying it into BIDS format
+    % Selecting relevant files from HCP folders and copying it into BIDS format
     tic
     disp('extracting anatomical files for ' + sub_foldername)
     %anatomical
@@ -120,9 +120,16 @@ for i = 1:(size(sub_table,1))
     file = anatomical_folder+anatomical_file;
     new_file = bids_anat_dir + sub_foldername + "_" + anatomical_file;
     copyfile(file, new_file)
-    gunzip(new_file)
-    delete(new_file) %deletes the zip file in the BIDS dir, doesn't touch HCP don't worry
-
+    nii_file = gunzip(new_file);
+    delete(new_file)
+    try %test reading nifti files here to see if there are any errors
+        test = niftiread(nii_file{1});
+    catch
+        disp('error reading ' + convertCharsToStrings(nii_file{1}) + ' logging and continuing')
+        unzip_log_file = fopen(DATA_DIR+"unzip_error_log.txt",'a');
+        fprintf(unzip_log_file,'Error loading: %s \n',convertCharsToStrings(nii_file{1}));
+        fclose(unzip_log_file);
+    end
     disp('extracting tb func files for ' + sub_foldername)
 
     %tb_motor
@@ -133,9 +140,18 @@ for i = 1:(size(sub_table,1))
     new_file = bids_func_dir + sub_foldername + "_" + tb_motor_file;
     copyfile(file, new_file)
     copyfile(ev_folder_motor, (bids_func_dir + sub_foldername + "_MOTOR_EVs/"))
-    gunzip(new_file)
+    nii_file = gunzip(new_file);
     delete(new_file)
-    
+    try
+        test = niftiread(nii_file{1});
+    catch
+        disp('error reading ' + convertCharsToStrings(nii_file{1}) + ' logging and continuing')
+        unzip_log_file = fopen(DATA_DIR+"unzip_error_log.txt",'a');
+        fprintf(unzip_log_file,'Error loading: %s \n',convertCharsToStrings(nii_file{1}));
+        fclose(unzip_log_file);
+    end
+
+
     %tb_language
     tb_language_folder = HCP_DIR + sub_dirs(i).name +"/MNINonLinear/Results/tfMRI_LANGUAGE_LR/";
     tb_language_file = "tfMRI_LANGUAGE_LR.nii.gz";
@@ -144,8 +160,16 @@ for i = 1:(size(sub_table,1))
     new_file = bids_func_dir + sub_foldername + "_" + tb_language_file;
     copyfile(file, new_file);
     copyfile(ev_folder_language, (bids_func_dir + sub_foldername + "_LANGUAGE_EVs/"));
-    gunzip(new_file)
+    nii_file = gunzip(new_file);
     delete(new_file)
+    try
+        test = niftiread(nii_file{1});
+    catch
+        disp('error reading ' + convertCharsToStrings(nii_file{1}) + ' logging and continuing')
+        unzip_log_file = fopen(DATA_DIR+"unzip_error_log.txt",'a');
+        fprintf(unzip_log_file,'Error loading: %s \n',convertCharsToStrings(nii_file{1}));
+        fclose(unzip_log_file);
+    end
     
     disp('extracting rs func files for ' + sub_foldername)
 
@@ -155,12 +179,21 @@ for i = 1:(size(sub_table,1))
     file = rest_folder+rest_file;
     new_file = bids_func_dir + sub_foldername + "_" + rest_file;
     copyfile(file, new_file)
-    gunzip(new_file)
+    nii_file = gunzip(new_file);
     delete(new_file)
+    try
+        test = niftiread(nii_file{1});
+    catch
+        disp('error reading ' + convertCharsToStrings(nii_file{1}) + ' logging and continuing')
+        unzip_log_file = fopen(DATA_DIR+"unzip_error_log.txt",'a');
+        fprintf(unzip_log_file,'Error loading: %s \n',convertCharsToStrings(nii_file{1}));
+        fclose(unzip_log_file);
+    end
     
     disp("processing time: " + toc + " s")
     
 end
+
 
 
 

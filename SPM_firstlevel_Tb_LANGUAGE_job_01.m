@@ -16,7 +16,7 @@ for i = 1:size(subfolders,1)
         % Make first level analysis folder structure before continuing
         sub_name = subfolders(i).name;
         SUB_DIR = strcat(BIDS_DIR,sub_name,'/');
-        firstlevel_DIR= strcat(SUB_DIR,'1stLevel'); %language specific
+        firstlevel_DIR= strcat(SUB_DIR,'1stLevel_LANGUAGE_01'); %language specific
         mkdir(firstlevel_DIR);
 
     %% SPM part, inital variables
@@ -89,7 +89,7 @@ for i = 1:size(subfolders,1)
 
     %% Define Contrasts
     matlabbatch{3}.spm.stats.con.consess{1}.tcon.name = 'Math-Story-01'; % Contrast name
-    matlabbatch{3}.spm.stats.con.consess{1}.tcon.weights = [-1 1]; % Set contrast
+    matlabbatch{3}.spm.stats.con.consess{1}.tcon.weights = [0 1]; % Set contrast
     matlabbatch{3}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
     matlabbatch{3}.spm.stats.con.delete = 0;
 

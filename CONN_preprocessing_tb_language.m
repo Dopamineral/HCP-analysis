@@ -1,7 +1,7 @@
 %% Add necessary folders and paths
 addpath("E:\Neuroradiology\conn20b\conn"); %CONN
 addpath("E:\Neuroradiology\spm12\spm12"); % SPM
-
+%
 DATA_DIR = "/mnt/storage/neuroradiology/data/";
 BIDS_DIR = "/mnt/storage/neuroradiology/data/BIDS/";
 HCP_DIR = "/mnt/storage/neuroradiology/data/HCP/";
